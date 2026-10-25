@@ -1,0 +1,52 @@
+name: Build APK
+
+# Builds the BuildTrack Android APK in GitHub's cloud and uploads it here.
+# How to use: put this file in your repo at .github/workflows/build-apk.yml
+# (GitHub web -> Add file -> Create new file), commit, then open the
+# Actions tab -> "Build APK" run -> Artifacts -> download buildtrack-debug-apk.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'client/**'
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install deps and build the web app against the live backend
+        working-directory: client
+        run: |
+          npm ci || npm install
+          VITE_API_URL=https://buildtrack-m0cr.onrender.com/api npm run build
+          npx cap sync android
+
+      - name: Build debug APK
+        working-directory: client/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildtrack-debug-apk
+          path: client/android/app/build/outputs/apk/debug/app-debug.apk
