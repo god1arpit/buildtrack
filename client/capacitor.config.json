@@ -1,0 +1,5 @@
+{
+  "appId": "com.buildtrack.app",
+  "appName": "BuildTrack",
+  "webDir": "dist"
+}

@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets (NEVER commit these)
+.env
+
+# Build output
+dist/
+build/
+client/dist/
+
+# Uploaded files & local database (runtime data, not source code)
+uploads/
+server/uploads/
+server/data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+backend/.venv*/
+
+# Large ML model binaries (use Git LFS or Releases for these)
+*.pth
+
+# Logs & OS files
+*.log
+.DS_Store
+Thumbs.db

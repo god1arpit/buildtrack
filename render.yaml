@@ -1,0 +1,19 @@
+# Render blueprint for the BuildTrack Express backend.
+# On Render: New -> Web Service -> connect the GitHub repo containing
+# this file. Render reads this blueprint automatically.
+# IMPORTANT: JWT_SECRET is marked sync:false, so Render will ask for a
+# value on first deploy — paste a NEW randomly generated secret there.
+# Never reuse the old secret that was committed to git (it is leaked).
+services:
+  - type: web
+    name: buildtrack-server
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        value: capacitor://localhost
