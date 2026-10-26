@@ -37,6 +37,28 @@ const app = express();
 
 // Connect to Database
 await connectDB();
+// Boot-seed demo accounts (free Render resets the JSON store on restart, and
+// public registration is labour-only by design, so builder accounts would
+// otherwise never exist). Creates ONLY missing demo users — never deletes
+// or touches existing data.
+try {
+  const { default: User } = await import("./models/User.js");
+  const demos = [
+    { name: "Arpit Sachdeva (Builder)", email: "builder@buildtrack.com", phone: "+91 9876543210", password: "password123", role: "builder" },
+    { name: "Ramesh Munshi (Supervisor)", email: "supervisor@buildtrack.com", phone: "+91 9812345678", password: "password123", role: "supervisor" },
+    { name: "Ramesh Kumar (Mason)", email: "ramesh.mason@buildtrack.com", phone: "+91 9834567890", password: "password123", role: "labour", skill: "Mason" },
+  ];
+  for (const demo of demos) {
+    const exists = await User.findOne({ email: demo.email });
+    if (!exists) {
+      await User.create(demo);
+      console.log(`[BootSeed] Created demo user: ${demo.email}`);
+    }
+  }
+} catch (err) {
+  console.error("[BootSeed] Failed:", err.message);
+}
+
 
 // Middlewares
 // CORS: the old `origin: "*"` + credentials combo is rejected by
